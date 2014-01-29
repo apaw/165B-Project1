@@ -53,6 +53,8 @@ current_attr = ""
 directed = " -> "
 underscore = "_"
 
+print "digraph mondial {"
+
 for line in sql_file:
 
 	buffer += line
@@ -62,8 +64,8 @@ for line in sql_file:
 		tokens, start, end = match
 		table_name = tokens[-1] # get table name
 
-		if (tokens[0] == "CREATE"): # only print the table node once, upon creation
-			print table_name
+		#if (tokens[0] == "CREATE"): # only print the table node once, upon creation
+		#	print table_name
 
 		buffer = buffer[end:] # moving the iterator
 		match = next(table_grammar.scanString(buffer), None)
@@ -74,17 +76,17 @@ for line in sql_file:
 		while match: # we've found a standard attribute line
 			tokens, start, end = match	
 
-			if (tokens[-2] == "PRIMARY"): # temp fix: indicating a primary key
-				print pk
+		#	if (tokens[-2] == "PRIMARY"): # temp fix: indicating a primary key
+				#print pk
 
 			if ((tokens[0] != sql_keyword) & (tokens[0] != open_para)): # get attribute name
 				current_attr = table_name + underscore + tokens[0]
-				print current_attr
+				#print current_attr
 				print table_name + directed + current_attr
 
 			elif (tokens[0] == open_para): # another way to get attribute name (escape parathesis)
 				current_attr = table_name + underscore + tokens[1]
-				print current_attr
+				#print current_attr
 				print table_name + directed + current_attr
 
 			buffer = buffer[end:]
@@ -112,3 +114,5 @@ for line in sql_file:
 						current_attr = table_name + underscore + tokens[1]
 					buffer = buffer[end:]
 					match = next(constraints.scanString(buffer), None)	
+
+print "\n}"

@@ -106,7 +106,7 @@ for line in sql_file:
 			elif (tokens[0] == open_para): # another way to get attribute name (escape parathesis)
 				current_attr = table_name + underscore + tokens[1]
 				print current_attr + " [label=\"" + tokens[1] + "\"]"
-				#print table_name + directed + current_attr + ""
+				print table_name + directed + current_attr + ""
 
 			#if (tokens[-2] == "PRIMARY"): # temp fix: indicating a primary key
 				#print current_attr + " [color=red,shape=diamond];"

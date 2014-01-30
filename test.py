@@ -21,6 +21,10 @@ identifiers = oneOf(" NOT NULL UNIQUE", caseless = True)
 default = "DEFAULT " + restOfLine
 sql_keyword = oneOf("ADD REFERENCES CHECK SELECT UNION AND FROM CONSTRAINT CREATE ALTER", caseless = True)
 
+#flag for subgraph parsing
+
+first_subgraph = 1
+
 # Define the relevant terms needed to parse table names
 # from create/alter statements
 
@@ -64,15 +68,21 @@ for line in sql_file:
 		tokens, start, end = match
 		table_name = tokens[-1] # get table name
 
-		#if (tokens[0] == "CREATE"): # only print the table node once, upon creation
-		#	print table_name
+		if (tokens[0] == "CREATE"): # only print the table node once, upon creation
+			if(first_subgraph == 0): #we need to close a subgraph
+				print "}"
+			else:
+				first_subgraph = 0
+			print "subgraph" + " cluster" + table_name + " {"
+			#print "label = \"" + table_name + "\";"
+			print "style=filled;"
+			print "color=lightgrey;"
 
 		buffer = buffer[end:] # moving the iterator
 		match = next(table_grammar.scanString(buffer), None)
-
 	else: # we have encountered the inside of the CREATE/ALTER TABLE statement
 		match = next(grammar.scanString(buffer), None) 
-
+			
 		while match: # we've found a standard attribute line
 			tokens, start, end = match	
 
@@ -82,12 +92,12 @@ for line in sql_file:
 			if ((tokens[0] != sql_keyword) & (tokens[0] != open_para)): # get attribute name
 				current_attr = table_name + underscore + tokens[0]
 				#print current_attr
-				print table_name + directed + current_attr
+				print table_name + directed + current_attr + ";"
 
 			elif (tokens[0] == open_para): # another way to get attribute name (escape parathesis)
 				current_attr = table_name + underscore + tokens[1]
 				#print current_attr
-				print table_name + directed + current_attr
+				print table_name + directed + current_attr + ";"
 
 			buffer = buffer[end:]
 			match = next(grammar.scanString(buffer), None)
@@ -97,7 +107,7 @@ for line in sql_file:
 
 			while match: # we've found a referencing line, for FKs
 				tokens, start, end = match
-				print current_attr + directed + tokens[1]
+				print current_attr + directed + tokens[1] + ";"
 				buffer = buffer[end:]
 				match = next(reference_grammar.scanString(buffer), None)
 
@@ -115,4 +125,4 @@ for line in sql_file:
 					buffer = buffer[end:]
 					match = next(constraints.scanString(buffer), None)	
 
-print "\n}"
+print "}\n}"

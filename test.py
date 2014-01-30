@@ -109,7 +109,7 @@ for line in sql_file:
 
 			while match: # we've found a referencing line, for FKs
 				tokens, start, end = match
-				print current_attr + directed + tokens[1] + "Key;"
+				print table_name + "Key" + directed + tokens[1] + "Key;"
 				buffer = buffer[end:]
 				match = next(reference_grammar.scanString(buffer), None)
 

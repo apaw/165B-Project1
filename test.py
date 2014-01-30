@@ -53,11 +53,20 @@ buffer = ""
 table_name = ""
 current_attr = ""
 
+#formatting
+table_format = "node [shape=\"box3d\" style=\"filled\" color=\"#0000FF\" fontname=\"Courier\" ]"
+attr_format = "node [shape=\"box\" style=\"rounded\" width=0 height=0 color=\"#00AA00\"]"
+
+edge_format = "edge [color=\"#00AA00\" dir=none style=\"\" label=\"\"]"
+key_format = "edge [color=red dir=forward style=dashed label=\" FK\" fontname=\"Veranda\" fontcolor=red fontsize=10]"
+
 # DOT arrows
 directed = " -> "
 underscore = "_"
 
 print "digraph mondial {"
+print "rankdir=BT"
+print edge_format
 
 for line in sql_file:
 
@@ -74,9 +83,12 @@ for line in sql_file:
 			else:
 				first_subgraph = 0
 			print "subgraph" + " cluster" + table_name + " {"
-			print "label = \"" + table_name + "\";"
-			print "style=filled;"
-			print "color=lightgrey;"
+			#print "label = \"" + table_name + "\";"
+			print "style=filled"
+			print "color=lightgrey"
+			print table_format
+			print table_name
+			print attr_format
 
 		buffer = buffer[end:] # moving the iterator
 		match = next(table_grammar.scanString(buffer), None)
@@ -88,18 +100,18 @@ for line in sql_file:
 
 			if ((tokens[0] != sql_keyword) & (tokens[0] != open_para)): # get attribute name
 				current_attr = table_name + underscore + tokens[0]
-				print current_attr + " [label=\"" + tokens[0] + "\"];"
-				#print table_name + directed + current_attr + ";"
+				print current_attr + " [label=\"" + tokens[0] + "\"]"
+				print table_name + directed + current_attr + ""
 
 			elif (tokens[0] == open_para): # another way to get attribute name (escape parathesis)
 				current_attr = table_name + underscore + tokens[1]
-				print current_attr + " [label=\"" + tokens[1] + "\"];"
-				#print table_name + directed + current_attr + ";"
+				print current_attr + " [label=\"" + tokens[1] + "\"]"
+				#print table_name + directed + current_attr + ""
 
-			if (tokens[-2] == "PRIMARY"): # temp fix: indicating a primary key
+			#if (tokens[-2] == "PRIMARY"): # temp fix: indicating a primary key
 				#print current_attr + " [color=red,shape=diamond];"
-				print tokens[-3] + " [color=red,shape=diamond];"			
-				print current_attr + directed + tokens[-3] + ";"
+				#print tokens[-3] + " [color=red,shape=diamond];"			
+				#print current_attr + directed + tokens[-3] + ";"
 
 			buffer = buffer[end:]
 			match = next(grammar.scanString(buffer), None)
@@ -109,7 +121,9 @@ for line in sql_file:
 
 			while match: # we've found a referencing line, for FKs
 				tokens, start, end = match
-				print table_name + "Key" + directed + tokens[1] + "Key;"
+				print key_format
+				print table_name + directed + tokens[1]
+				print edge_format
 				buffer = buffer[end:]
 				match = next(reference_grammar.scanString(buffer), None)
 

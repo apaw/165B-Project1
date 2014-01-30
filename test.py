@@ -86,9 +86,6 @@ for line in sql_file:
 		while match: # we've found a standard attribute line
 			tokens, start, end = match	
 
-		#	if (tokens[-2] == "PRIMARY"): # temp fix: indicating a primary key
-				#print pk
-
 			if ((tokens[0] != sql_keyword) & (tokens[0] != open_para)): # get attribute name
 				current_attr = table_name + underscore + tokens[0]
 				#print current_attr
@@ -98,6 +95,9 @@ for line in sql_file:
 				current_attr = table_name + underscore + tokens[1]
 				#print current_attr
 				print table_name + directed + current_attr + ";"
+
+			if (tokens[-2] == "PRIMARY"): # temp fix: indicating a primary key
+				print current_attr + " [color=red,shape=diamond];"				
 
 			buffer = buffer[end:]
 			match = next(grammar.scanString(buffer), None)

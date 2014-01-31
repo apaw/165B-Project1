@@ -1,0 +1,17 @@
+======================
+** Group Project #1 ** 
+======================
+
+Group Members: 
+
+Jonathan Hollenbeck (Python programming, DOT language generating), Alicia Paw (Python programming, documentation)
+
+Summary: We implemented the PostgreSQL Schema View for our project, and tested primarily against the mondial schema we used in 165B. Our script is written in Python, and it simply parses the schema for the relevant table names and attributes, and embeds the DOT language tags into .gv as it parses down the schema. We have included a makefile that can be used to run our program. It has been tested to run on the CSIF machines, though it may be slow to bring up the pictorial representation of the graph (it is a big graph after all).
+
+Our Python script runs with dependence on the module pyparsing. Although some CSIF machines probably have it, you might have to download it online for the script to compile.
+
+How to Run: Type 'make' in the correct directory, and that should be about it. A window will pop up with the rendered graph, but you can always open up the png in another file viewer if it's too slow. Note our python script has the mondial-schema.sql file hardcoded as the default file it opens and parses. You can simply move another file into the directory and replace "mondial-schema.sql" with your file to parse it. 
+
+It should also be noted that our code runs best on schema files formatted in the same way as mondial-schema.sql. For instance, our script ignores parameter checking, and assumes any line that begins with "CONSTRAINT" to be a declaration of a foreign or primary key.
+
+We used GitHub as our code repo for this project.

@@ -64,6 +64,9 @@ key_format = "edge [color=red dir=forward style=dashed label=\" FK\" fontname=\"
 directed = " -> "
 underscore = "_"
 
+#global variables
+reference_attr = ""
+
 print "digraph mondial {"
 print "rankdir=BT"
 print edge_format
@@ -113,6 +116,8 @@ for line in sql_file:
 				#print tokens[-3] + " [color=red,shape=diamond];"			
 				#print current_attr + directed + tokens[-3] + ";"
 
+			reference_attr = current_attr #save the attribute in case we get REFERENCING on the next line
+
 			buffer = buffer[end:]
 			match = next(grammar.scanString(buffer), None)
 
@@ -122,7 +127,7 @@ for line in sql_file:
 			while match: # we've found a referencing line, for FKs
 				tokens, start, end = match
 				print key_format
-				print table_name + directed + tokens[1]
+				print reference_attr + directed + tokens[1]
 				print edge_format
 				buffer = buffer[end:]
 				match = next(reference_grammar.scanString(buffer), None)
@@ -134,10 +139,10 @@ for line in sql_file:
 					tokens, start, end = match
 
 					if (tokens[0] == "ADD"): # escape the leading ADD from alter table
-						current_attr = table_name + underscore + tokens[2]
+						reference_attr = table_name + underscore + tokens[2]
 
 					else: 
-						current_attr = table_name + underscore + tokens[1]
+						reference_attr = table_name + underscore + tokens[1]
 					buffer = buffer[end:]
 					match = next(constraints.scanString(buffer), None)	
 

@@ -34,17 +34,17 @@ table_grammar =  create_or_alter + "TABLE " + Word( alphas + "_")
 # Grammar for attribute lines
 
 # Dealing with constraint arguments
-constraints = Optional( "ADD" ) + "CONSTRAINT" + Word( alphas ) + key + Optional( key ) + "KEY (" + Word(alphas) + ZeroOrMore("," + Word(alphas)) + ")"
+constraints = Optional( "ADD" ) + "CONSTRAINT" + Word( alphas ) + key + Optional( key ) + "KEY (" + Word(alphanums) + ZeroOrMore("," + Word(alphanums)) + ")"
 
 # Dealing with type declaration
 types = oneOf("VARCHAR( NUMERIC", caseless = True)
 type_grammar = types + Optional( Word( nums ) ) + Optional( ")" ) + Optional( OneOrMore(identifiers) ) + Optional(default)
 
 # Dealing with parsing lines for the actual attribute names
-grammar = Optional( open_para ) + Word( alphas ) + type_grammar + Optional( constraints )
+grammar = Optional( open_para ) + Word( alphanums ) + type_grammar + Optional( constraints )
 
 # Dealing with reference declarations
-reference_grammar = "REFERENCES" + Word ( alphas ) + restOfLine
+reference_grammar = "REFERENCES" + Word ( alphanums ) + restOfLine
 
 # And check statements
 check_grammar = "CHECK" + restOfLine

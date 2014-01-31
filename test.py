@@ -34,7 +34,7 @@ table_grammar =  create_or_alter + "TABLE " + Word( alphas + "_")
 # Grammar for attribute lines
 
 # Dealing with constraint arguments
-constraints = Optional( "ADD" ) + "CONSTRAINT" + Word( alphas ) + key + Optional( key ) + restOfLine
+constraints = Optional( "ADD" ) + "CONSTRAINT" + Word( alphas ) + key + Optional( key ) + "KEY (" + Word(alphas) + ZeroOrMore("," + Word(alphas)) + ")"
 
 # Dealing with type declaration
 types = oneOf("VARCHAR( NUMERIC", caseless = True)
@@ -65,7 +65,7 @@ directed = " -> "
 underscore = "_"
 
 #global variables
-reference_attr = ""
+reference_attr = []
 
 print "digraph mondial {"
 print "rankdir=BT"
@@ -116,7 +116,8 @@ for line in sql_file:
 				#print tokens[-3] + " [color=red,shape=diamond];"			
 				#print current_attr + directed + tokens[-3] + ";"
 
-			reference_attr = current_attr #save the attribute in case we get REFERENCING on the next line
+			reference_attr = []
+			reference_attr.append(current_attr) #save the attribute in case we get REFERENCING on the next line
 
 			buffer = buffer[end:]
 			match = next(grammar.scanString(buffer), None)
@@ -127,7 +128,8 @@ for line in sql_file:
 			while match: # we've found a referencing line, for FKs
 				tokens, start, end = match
 				print key_format
-				print reference_attr + directed + tokens[1]
+				for s in reference_attr:
+					print s + directed + tokens[1]
 				print edge_format
 				buffer = buffer[end:]
 				match = next(reference_grammar.scanString(buffer), None)
@@ -138,11 +140,24 @@ for line in sql_file:
 				while match: # we've found a constraint line, for FKs and PKs
 					tokens, start, end = match
 
-					if (tokens[0] == "ADD"): # escape the leading ADD from alter table
-						reference_attr = table_name + underscore + tokens[2]
+					#print "FINDME"
+					#print tokens[5]
+					#print len(tokens)
+					#print tokens
+					i = 5
 
-					else: 
-						reference_attr = table_name + underscore + tokens[1]
+					if (tokens[0] == "ADD"): # escape the leading ADD from alter table
+						i = i+1
+					if(tokens[i] == ","): #primary key
+						i = i-1	
+					#print(tokens)
+					reference_attr = []
+					while (i < len(tokens)):	
+						reference_attr.append(table_name + underscore + tokens[i])
+						i = i+2
+
+					#print(reference_attr)
+					
 					buffer = buffer[end:]
 					match = next(constraints.scanString(buffer), None)	
 
